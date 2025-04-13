@@ -1,3 +1,4 @@
+from typing import Any
 from bson import ObjectId
 import hanlp.pretrained
 import pandas as pd
@@ -20,9 +21,14 @@ client = get_database_client()
 db = client[selected_platform]
 articles: Collection[ArticleMongoModel] = db["articles"]
 
-total_articles = articles.count_documents({})
-
 # Pagination controls
+search_query = st.sidebar.text_input("搜尋關鍵字…")
+query: dict[str, Any] = {}
+if search_query:
+    query["title"] = {"$regex": search_query, "$options": "i"}
+
+total_articles = articles.count_documents(query)
+
 items_per_page = st.sidebar.selectbox("每頁顯示筆數", [10, 20, 50, 100], index=0)
 total_pages = (total_articles + items_per_page - 1) // items_per_page
 current_page = st.sidebar.number_input(
@@ -32,7 +38,7 @@ current_page = st.sidebar.number_input(
 # Calculate skip value for pagination
 skip = (current_page - 1) * items_per_page
 
-found_articles_db = articles.find().skip(skip).limit(items_per_page).to_list()
+found_articles_db = articles.find(query).skip(skip).limit(items_per_page).to_list()
 found_articles_df = pd.DataFrame(
     [article_from_mongo_model(article) for article in found_articles_db]
 )
