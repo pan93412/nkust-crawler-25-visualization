@@ -76,13 +76,12 @@ st.caption(f"顯示第 {skip + 1} 至 {min(skip + items_per_page, total_comments
 
 st.divider()
 
-st.subheader("留言關鍵字")
+with st.expander("這一頁留言的關鍵字"):
+    nlp_instance = nlp.Nlp()
 
-nlp_instance = nlp.Nlp()
+    # 將所有留言彙整成一個很大的字串
+    all_comments_content = " ".join(comments_df["content"].tolist())
+    word_counts = nlp_instance.word_count(all_comments_content)
+    word_cloud = nlp_instance.word_cloud(word_counts)
 
-# 將所有留言彙整成一個很大的字串
-all_comments_content = " ".join(comments_df["content"].tolist())
-word_counts = nlp_instance.word_count(all_comments_content)
-word_cloud = nlp_instance.word_cloud(word_counts)
-
-st.image(word_cloud)
+    st.image(word_cloud)
