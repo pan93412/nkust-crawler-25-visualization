@@ -1,10 +1,7 @@
 from typing import Any
 from bson import ObjectId
-import hanlp.pretrained
 import pandas as pd
 import streamlit as st
-import hanlp
-import cleaner
 import nlp
 
 from pymongo.collection import Collection
