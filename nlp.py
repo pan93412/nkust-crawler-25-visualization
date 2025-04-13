@@ -8,6 +8,7 @@ import wordcloud
 
 import cleaner
 
+
 class Nlp:
     def __init__(self):
         self.cleaner = cleaner.BasicCleaner()
@@ -16,8 +17,8 @@ class Nlp:
     @functools.cached_property
     def stopwords(self) -> set[str]:
         stopwords = set()
-        for path in glob('./stopwords/*.json'):
-            with open(path, 'r') as f:
+        for path in glob("./stopwords/*.json"):
+            with open(path, "r") as f:
                 stopwords.update(json.load(f))
         return stopwords
 

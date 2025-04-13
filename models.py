@@ -12,6 +12,7 @@ class ArticleMongoModel(TypedDict):
     created_at: datetime
     content: str
 
+
 @dataclass
 class Article:
     _id: str | None
@@ -20,6 +21,7 @@ class Article:
     title: str
     created_at: datetime
     content: str
+
 
 def article_from_mongo_model(mongo_model: ArticleMongoModel) -> Article:
     assert "_id" in mongo_model, "mongo_model 必須包含 _id 欄位"
@@ -33,6 +35,7 @@ def article_from_mongo_model(mongo_model: ArticleMongoModel) -> Article:
         content=mongo_model["content"],
     )
 
+
 class CommentMongoModel(TypedDict):
     _id: NotRequired[ObjectId]
     article_id: ObjectId
@@ -43,6 +46,7 @@ class CommentMongoModel(TypedDict):
     likes: int | None
     dislikes: int | None
     reaction_type: Literal["+1", "-1", "0"] | None
+
 
 @dataclass
 class Comment:
@@ -56,6 +60,7 @@ class Comment:
     dislikes: int = 0
     reaction_type: Literal["+1", "-1", "0"] = "0"
 
+
 def comment_from_mongo_model(mongo_model: CommentMongoModel) -> Comment:
     assert "_id" in mongo_model, "mongo_model 必須包含 _id 欄位"
 
@@ -68,8 +73,11 @@ def comment_from_mongo_model(mongo_model: CommentMongoModel) -> Comment:
         author=mongo_model["author"],
         likes="likes" in mongo_model and mongo_model["likes"] or 0,
         dislikes="dislikes" in mongo_model and mongo_model["dislikes"] or 0,
-        reaction_type="reaction_type" in mongo_model and mongo_model["reaction_type"] or "0",
+        reaction_type="reaction_type" in mongo_model
+        and mongo_model["reaction_type"]
+        or "0",
     )
+
 
 class ReplyMongoModel(TypedDict):
     _id: NotRequired[ObjectId]
@@ -82,6 +90,7 @@ class ReplyMongoModel(TypedDict):
     likes: int | None
     dislikes: int | None
     reaction_type: Literal["+1", "-1", "0"] | None
+
 
 @dataclass
 class Reply:
@@ -96,6 +105,7 @@ class Reply:
     dislikes: int = 0
     reaction_type: Literal["+1", "-1", "0"] = "0"
 
+
 def reply_from_mongo_model(mongo_model: ReplyMongoModel) -> Reply:
     assert "_id" in mongo_model, "mongo_model 必須包含 _id 欄位"
 
@@ -109,5 +119,7 @@ def reply_from_mongo_model(mongo_model: ReplyMongoModel) -> Reply:
         author=mongo_model["author"],
         likes="likes" in mongo_model and mongo_model["likes"] or 0,
         dislikes="dislikes" in mongo_model and mongo_model["dislikes"] or 0,
-        reaction_type="reaction_type" in mongo_model and mongo_model["reaction_type"] or "0",
+        reaction_type="reaction_type" in mongo_model
+        and mongo_model["reaction_type"]
+        or "0",
     )

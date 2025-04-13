@@ -25,13 +25,17 @@ total_articles = articles.count_documents({})
 # Pagination controls
 items_per_page = st.sidebar.selectbox("每頁顯示筆數", [10, 20, 50, 100], index=0)
 total_pages = (total_articles + items_per_page - 1) // items_per_page
-current_page = st.sidebar.number_input("頁數", min_value=1, max_value=total_pages, value=1, step=1)
+current_page = st.sidebar.number_input(
+    "頁數", min_value=1, max_value=total_pages, value=1, step=1
+)
 
 # Calculate skip value for pagination
 skip = (current_page - 1) * items_per_page
 
 found_articles_db = articles.find().skip(skip).limit(items_per_page).to_list()
-found_articles_df = pd.DataFrame([article_from_mongo_model(article) for article in found_articles_db])
+found_articles_df = pd.DataFrame(
+    [article_from_mongo_model(article) for article in found_articles_db]
+)
 found_articles_df.set_index("_id", inplace=True)
 found_articles_df = found_articles_df[["title", "created_at", "article_id"]]
 
@@ -41,13 +45,15 @@ with st.expander("文章列表", expanded=True):
         found_articles_df,
         hide_index=True,
         on_select="rerun",
-        selection_mode="single-row"
+        selection_mode="single-row",
     )
 
     # Display pagination info
-    st.caption(f"顯示第 {skip + 1} 至 {min(skip + items_per_page, total_articles)} 筆，共 {total_articles} 筆")
+    st.caption(
+        f"顯示第 {skip + 1} 至 {min(skip + items_per_page, total_articles)} 筆，共 {total_articles} 筆"
+    )
 
-selection = df_state.get('selection')
+selection = df_state.get("selection")
 if selection and "rows" in selection and len(selection["rows"]) > 0:
     id = selection["rows"][0]
     article_id = found_articles_df.index[id]
@@ -62,13 +68,17 @@ if selection and "rows" in selection and len(selection["rows"]) > 0:
     comments_collection: Collection[CommentMongoModel] = db["comments"]
 
     assert "_id" in article
-    total_count_comments = comments_collection.count_documents({"article_id": article["_id"]})
+    total_count_comments = comments_collection.count_documents(
+        {"article_id": article["_id"]}
+    )
 
     st.write(f"## {article['title']}")
 
     col1, col2 = st.columns(2)
     with col1:
-        st.metric(label="發布時間", value=article['created_at'].strftime('%Y-%m-%d %H:%M:%S'))
+        st.metric(
+            label="發布時間", value=article["created_at"].strftime("%Y-%m-%d %H:%M:%S")
+        )
     with col2:
         st.metric(label="留言數", value=total_count_comments)
 

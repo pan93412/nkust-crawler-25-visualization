@@ -44,7 +44,10 @@ for platform_index, platform in enumerate(platform_options()):
         assert newest_article is not None, "找不到文章"
         newest_date = newest_article["created_at"]
 
-        st.metric(label="時間跨度", value=f"{oldest_date.strftime('%Y-%m-%d')} ~ {newest_date.strftime('%Y-%m-%d')}")
+        st.metric(
+            label="時間跨度",
+            value=f"{oldest_date.strftime('%Y-%m-%d')} ~ {newest_date.strftime('%Y-%m-%d')}",
+        )
         st.metric(label="時間跨度天數", value=f"{newest_date - oldest_date}")
 
     with col2:
