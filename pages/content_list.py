@@ -83,8 +83,12 @@ if selection and "rows" in selection and len(selection["rows"]) > 0:
         st.text(article["content"])
 
     # 斷詞 + 文字雲
-    with st.expander("文字雲", expanded=False):
-        nlp_instance = nlp.Nlp()
-        word_counts = nlp_instance.word_count(article["content"])
-        word_cloud = nlp_instance.word_cloud(word_counts)
-        st.image(word_cloud)
+    st.sidebar.divider()
+    show_word_cloud = st.sidebar.checkbox("顯示文字雲")
+
+    if show_word_cloud:
+        with st.expander("文字雲", expanded=False):
+            nlp_instance = nlp.Nlp()
+            word_counts = nlp_instance.word_count(article["content"])
+            word_cloud = nlp_instance.word_cloud(word_counts)
+            st.image(word_cloud)
