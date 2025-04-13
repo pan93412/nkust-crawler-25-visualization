@@ -5,6 +5,7 @@ from pymongo.collection import Collection
 
 from components import get_database_client, platform_options
 from models import ArticleMongoModel, CommentMongoModel, comment_from_mongo_model
+import nlp
 
 st.title("留言探勘")
 
@@ -43,6 +44,10 @@ total_comments_count = comments_collection.count_documents({"article_id": articl
 positive_comments_count = comments_collection.count_documents({"article_id": article["_id"], "reaction_type": "+1"})
 negative_comments_count = comments_collection.count_documents({"article_id": article["_id"], "reaction_type": "-1"})
 
+if total_comments_count == 0:
+    st.warning("此篇文章沒有任何留言！")
+    st.stop()
+
 col1, col2, col3 = st.columns(3)
 with col1:
     st.metric(label="留言數", value=comments_collection.count_documents({"article_id": article["_id"]}))
@@ -68,3 +73,16 @@ comments_display_df = comments_df[["reaction_type", "content", "author", "likes"
 
 st.dataframe(comments_display_df)
 st.caption(f"顯示第 {skip + 1} 至 {min(skip + items_per_page, total_comments_count)} 筆，共 {total_comments_count} 筆")
+
+st.divider()
+
+st.subheader("留言關鍵字")
+
+nlp_instance = nlp.Nlp()
+
+# 將所有留言彙整成一個很大的字串
+all_comments_content = " ".join(comments_df["content"].tolist())
+word_counts = nlp_instance.word_count(all_comments_content)
+word_cloud = nlp_instance.word_cloud(word_counts)
+
+st.image(word_cloud)

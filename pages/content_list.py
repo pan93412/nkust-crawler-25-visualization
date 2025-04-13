@@ -9,7 +9,7 @@ import nlp
 from pymongo.collection import Collection
 
 from components import get_database_client, platform_options
-from models import ArticleMongoModel, article_from_mongo_model
+from models import ArticleMongoModel, CommentMongoModel, article_from_mongo_model
 
 st.title("MongoDB 資料總覽")
 
@@ -59,27 +59,32 @@ if selection and "rows" in selection and len(selection["rows"]) > 0:
         st.error("找不到文章")
         st.stop()
 
-    st.write(f"### {article['title']}")
-    st.caption(f"發布時間：{article['created_at'].strftime('%Y-%m-%d %H:%M:%S')}")
+    comments_collection: Collection[CommentMongoModel] = db["comments"]
+
+    assert "_id" in article
+    total_count_comments = comments_collection.count_documents({"article_id": article["_id"]})
+
+    st.write(f"## {article['title']}")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric(label="發布時間", value=article['created_at'].strftime('%Y-%m-%d %H:%M:%S'))
+    with col2:
+        st.metric(label="留言數", value=total_count_comments)
+
+    col1, col2, _ = st.columns([1, 1, 3])
+    with col1:
+        st.link_button("查看原文", article["url"])
+    with col2:
+        if st.button("留言探勘"):
+            st.switch_page("pages/comments_mining.py")
 
     with st.expander("文章內容", expanded=False):
         st.text(article["content"])
 
     # 斷詞 + 文字雲
     with st.expander("文字雲", expanded=False):
-        cleaner = cleaner.BasicCleaner()
-        cleaned_content = cleaner.clean_text(article["content"])
-
         nlp_instance = nlp.Nlp()
-        word_counts = nlp_instance.word_count(cleaned_content)
+        word_counts = nlp_instance.word_count(article["content"])
         word_cloud = nlp_instance.word_cloud(word_counts)
         st.image(word_cloud)
-
-    col1, col2, col3, _ = st.columns([1, 1, 1, 2])
-    with col1:
-        st.link_button("查看原文", article["url"])
-    with col2:
-        if st.button("留言探勘"):
-            st.switch_page("pages/comments_mining.py")
-    with col3:
-        st.button("文字雲")

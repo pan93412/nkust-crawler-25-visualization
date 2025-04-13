@@ -6,8 +6,11 @@ import hanlp
 import hanlp.pretrained
 import wordcloud
 
+import cleaner
+
 class Nlp:
     def __init__(self):
+        self.cleaner = cleaner.BasicCleaner()
         self.segmenter = hanlp.load(hanlp.pretrained.tok.COARSE_ELECTRA_SMALL_ZH)
 
     @functools.cached_property
@@ -19,7 +22,7 @@ class Nlp:
         return stopwords
 
     def segment(self, text: str) -> list[str]:
-        normalized_text = text.replace("\n", " ").replace("\r", " ")
+        normalized_text = self.cleaner.clean_text(text)
         segmented = self.segmenter(normalized_text)
         return [word for word in segmented if word not in self.stopwords]
 

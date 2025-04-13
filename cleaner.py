@@ -89,8 +89,9 @@ class BasicCleaner:
         text = self.remove_other_links(text)
         
         # Remove extra whitespace and normalize line breaks
-        text = re.sub(r'\n{3,}', '\n\n', text)
+        text = re.sub(r'[\r\n]+', ' ', text)
         text = re.sub(r' {2,}', ' ', text)
+        text = re.sub(r'\.\.\.\.+', '…', text)
         text = text.strip()
-        
+
         return text
