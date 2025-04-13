@@ -8,6 +8,7 @@ st.set_page_config(
 
 pg = st.navigation(
     pages=[
+        st.Page("pages/database_overview.py", title="資料庫總覽", icon="📊"),
         st.Page("pages/content_list.py", title="文章瀏覽", icon="🔍"),
         st.Page("pages/comments_mining.py", title="留言探勘", icon="💬"),
     ]
