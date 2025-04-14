@@ -35,7 +35,7 @@ current_page = st.sidebar.number_input(
 # Calculate skip value for pagination
 skip = (current_page - 1) * items_per_page
 
-found_articles_db = articles.find(query).skip(skip).limit(items_per_page).to_list()
+found_articles_db = articles.find(query).sort("created_at", -1).skip(skip).limit(items_per_page).to_list()
 found_articles_df = pd.DataFrame(
     [article_from_mongo_model(article) for article in found_articles_db]
 )

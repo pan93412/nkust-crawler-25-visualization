@@ -91,9 +91,9 @@ skip = (current_page - 1) * items_per_page
 
 comments = (
     comments_collection.find({"article_id": article["_id"]})
+    .sort("created_at", 1)  # 由舊到新排序
     .skip(skip)
     .limit(items_per_page)
-    .sort("created_at", -1)
 )
 comments_df = pd.DataFrame([comment_from_mongo_model(comment) for comment in comments])
 
@@ -135,7 +135,7 @@ if (
     replies_collection: Collection[ReplyMongoModel] = db["replies"]
     replies = replies_collection.find(
         {"article_id": article["_id"], "comment_id": ObjectId(comment["_id"])}
-    ).to_list()
+    ).sort("created_at", 1).to_list()
 
     if len(replies) == 0:
         st.warning("這則留言底下沒有任何回覆！")
