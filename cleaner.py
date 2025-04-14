@@ -1,4 +1,5 @@
 import re
+import unicodedata
 import emoji
 
 
@@ -81,6 +82,9 @@ class BasicCleaner:
         """Apply all cleaning operations to text"""
         if not text:
             return ""
+
+        # unicode normalization
+        text = unicodedata.normalize("NFKC", text)
 
         text = self.remove_emojis(text)
         text = self.remove_separators(text)
