@@ -9,11 +9,24 @@ import wordcloud
 
 import cleaner
 
+# https://hanlp.hankcs.com/docs/annotations/pos/ctb.html
+ACCEPTED_POS = [
+    "CD",
+    "FW",
+    "JJ",
+    "NN",
+    "NR",
+    "NT",
+    "OD",
+    "VA",
+    "VV"
+]
 
 class Nlp:
     def __init__(self):
         self.cleaner = cleaner.BasicCleaner()
         self.segmenter = hanlp.load(hanlp.pretrained.tok.COARSE_ELECTRA_SMALL_ZH)
+        self.pos_tagger = hanlp.load(hanlp.pretrained.pos.CTB9_POS_ELECTRA_SMALL)
 
     @functools.cached_property
     def stopwords(self) -> set[str]:
@@ -29,7 +42,15 @@ class Nlp:
     def segment(self, text: str) -> list[str]:
         normalized_text = self.cleaner.clean_text(text)
         segmented = self.segmenter(normalized_text)
-        return [word for word in segmented if word not in self.stopwords]
+
+        # filter out stopwords
+        segmented_cleaned = [word for word in segmented if word not in self.stopwords]
+
+        # tag pos
+        pos = self.pos_tagger(segmented_cleaned)
+
+        # filter out words that are not in the accepted pos
+        return [word for word, p in zip(segmented_cleaned, pos) if p in ACCEPTED_POS]
 
     def word_count(self, text: str) -> dict[str, int]:
         words = self.segment(text)
