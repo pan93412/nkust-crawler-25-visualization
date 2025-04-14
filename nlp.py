@@ -2,6 +2,7 @@ from collections import Counter
 import functools
 from glob import glob
 import json
+import string
 import hanlp
 import hanlp.pretrained
 import wordcloud
@@ -20,6 +21,9 @@ class Nlp:
         for path in glob("./stopwords/*.json"):
             with open(path, "r") as f:
                 stopwords.update(json.load(f))
+
+        stopwords.update(string.punctuation + string.whitespace)
+
         return stopwords
 
     def segment(self, text: str) -> list[str]:
@@ -30,6 +34,11 @@ class Nlp:
     def word_count(self, text: str) -> dict[str, int]:
         words = self.segment(text)
         return Counter(words)
+
+    def keywords(self, word_counts: dict[str, int]) -> list[str]:
+        # find the most 5 frequent words
+        most_frequent_words = sorted(word_counts.items(), key=lambda x: x[1], reverse=True)[:5]
+        return [word for word, _ in most_frequent_words]
 
     def word_cloud(self, word_counts: dict[str, int]) -> str:
         wc = wordcloud.WordCloud(

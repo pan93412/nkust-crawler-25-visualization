@@ -103,5 +103,9 @@ if selection and "rows" in selection and len(selection["rows"]) > 0:
         with st.expander("文字雲", expanded=False):
             nlp_instance = nlp.Nlp()
             word_counts = nlp_instance.word_count(article["content"])
+
+            keywords = nlp_instance.keywords(word_counts)
+            st.write("關鍵字: ", "、".join(keywords))
+
             word_cloud = nlp_instance.word_cloud(word_counts)
             st.image(word_cloud)

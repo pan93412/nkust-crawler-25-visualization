@@ -115,6 +115,10 @@ if show_this_page_keywords:
         # 將所有留言彙整成一個很大的字串
         all_comments_content = " ".join(comments_df["content"].tolist())
         word_counts = nlp_instance.word_count(all_comments_content)
+
+        keywords = nlp_instance.keywords(word_counts)
+        st.write("關鍵字: ", "、".join(keywords))
+
         word_cloud = nlp_instance.word_cloud(word_counts)
 
         st.image(word_cloud)
@@ -160,6 +164,10 @@ if (
             all_replies_content = re.sub(r"B\d+(?:-\d+)?", "", all_replies_content)
 
             word_counts = nlp_instance.word_count(all_replies_content)
+
+            keywords = nlp_instance.keywords(word_counts)
+            st.write("關鍵字: ", "、".join(keywords))
+
             word_cloud = nlp_instance.word_cloud(word_counts)
 
             st.image(word_cloud)
